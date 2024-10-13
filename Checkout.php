@@ -26,8 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // Clear the cart
-            unset($_SESSION['cart']);
-
+            unset($_SESSION['cart']);   
+           
             // Redirect to a success page
             header('Location: success.php');
             exit();
