@@ -1,210 +1,205 @@
 <?php
 include 'includes/init.php';
-$message = [];
 
-// Check if the form to save (insert/update) is submitted
-if (isset($_POST['btnSave'])) {
-    if (isset($_POST['action'])) {
-        if ($_POST['action'] == 'update') {
-            $data = [
-                "id" => trim(escape($_POST['attendance_id'])), // Ensure attendance_id is correctly used
-                "employee_id" => trim(escape($_POST['employee_id'])),
-                "attendance_date" => trim(escape($_POST['attendance_date'])),
-                "status" => trim(escape($_POST['status'])),
-            ];
+// Check if a new attendance record is submitted
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveAttendance'])) {
+    $employee_id = $_POST['employee_id'];
+    $attendance_date = date('Y-m-d'); // Use the current date
+    $status = $_POST['status'] === 'on' ? 'Present' : 'Absent';
 
-            // Update action
-            if (update('employeeattendance', $data, 'id')) { // Ensure 'id' matches the column name
-                $message = ["Attendance successfully updated!", "success"];
-            } else {
-                $message = ["Sorry! Something went wrong while updating attendance.", "danger"];
-            }
-        } elseif ($_POST['action'] == 'insert') {
-            $data = [
-                "employee_id" => trim(escape($_POST['employee_id'])),
-                "attendance_date" => trim(escape($_POST['attendance_date'])),
-                "status" => trim(escape($_POST['status'])),
-            ];
+    // Insert the new attendance record
+    $data = [
+        "employee_id" => $employee_id,
+        "attendance_date" => $attendance_date,
+        "status" => $status
+    ];
 
-            // Insert action
-            if (insert('employeeattendance', $data)) { // Call the insert function
-                $message = ["Attendance successfully added!", "success"];
-            } else {
-                $message = ["Sorry! Something went wrong while adding attendance.", "danger"];
-            }
-        }
-    }
-}
-
-// Check if the delete button is pressed
-if (isset($_POST['btnDelete'])) {
-    if (delete('employeeattendance', $_POST['attendance_id'])) {
-        $message = ["Successfully Deleted!", "success"];
+    if (insert('employeeattendance', $data)) {
+        echo "<script>alert('Attendance saved successfully!');</script>";
     } else {
-        $message = ["Sorry! Something went wrong", "danger"];
+        echo "<script>alert('Failed to save attendance.');</script>";
     }
 }
 
+// Check if AJAX request is sent to update the status
+if (isset($_POST['action']) && $_POST['action'] === 'updateStatus') {
+    $attendance_id = $_POST['attendance_id'];
+    $status = $_POST['status'] === 'true' ? 'Present' : 'Absent';
 
+    // Update the status in the database
+    $data = [
+        "id" => $attendance_id,
+        "status" => $status
+    ];
 
+    if (update('employeeattendance', $data, 'id')) {
+        echo json_encode(["success" => true, "message" => "Status updated successfully!"]);
+    } else {
+        echo json_encode(["success" => false, "message" => "Failed to update status."]);
+    }
+    exit;
+}
+
+// Read all employees for the dropdown
+$employees = read('employees');
 ?>
 
 <main id="main" class="main">
     <section class="section">
         <div class="container mt-4"></div>
-        <div class="pagetitle text-center mt-5 p-2">
+        <!-- <div class="pagetitle text-center mt-5 p-2">
             <h1>Employee Attendance</h1>
-        </div>
-        <div class="alerts">
-            <?php $message ? showMessage($message) : ""; ?>
-        </div>
+        </div> -->
 
         <div class="row">
-            <div class="card-header py-3 ">
-                <button type="button" class="btn" style="background-color: #603F26; color:white; margin-left:20px;"
-                    data-bs-toggle="modal" data-bs-target="#attendanceModal" onclick="reset()">
-                    Add new attendance
-                </button>
-            </div>
             <div class="col-lg-12 p-4">
-                <div class="card">
-                    <table class="table datatable">
-                        <thead>
-                            <tr>
-                                <th><b>Attendance ID</b></th>
-                                <th>Employee Name</th>
-                                <th>Attendance Date</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h3>Attendance List</h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <!-- Add attendance form -->
+                        <form method="POST" action="">
+                            <div class="mb-3">
+                                <label for="employee" class="form-label">Employee</label>
+                                <select class="form-select" id="employee" name="employee_id" required>
+                                    <option value="">Select Employee</option>
+                                    <?php foreach ($employees as $employee) { ?>
+                                        <option value="<?= $employee['id']; ?>"><?= $employee['name']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="status" name="status">
+                                <label class="form-check-label" for="status">Present</label>
+                            </div>
+                            <button type="submit" name="saveAttendance" class="btn btn-success">Save Attendance</button>
+                        </form>
+
+                        <!-- Attendance table -->
+                        <table class="table table-hover table-striped table-bordered text-center mt-4">
+                            <thead class="bg-secondary text-white">
+                                <tr>
+                                    <th>Attendance ID</th>
+                                    <th>Employee Name</th>
+                                    <th>Attendance Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
                                 foreach (read('employeeattendance') as $attendance) {
-                            ?>
-                            <tr>
-                                <td> <?= $attendance['id']; ?></td>
-                                <td><?= read_column('employees', 'name', $attendance['employee_id']); ?></td>
-                                <td><?= $attendance['attendance_date']; ?></td>
-                                <td><?= $attendance['status']; ?></td>
-                                <td>
-                                    <!-- Edit Attendance Button -->
-                                    <a href="#attendanceModal" data-bs-toggle="modal" class="btn btn-primary"
-                                        onclick="fillForm(<?= $attendance['id']; ?>, <?= $attendance['employee_id']; ?>, '<?= $attendance['attendance_date']; ?>', '<?= $attendance['status']; ?>')">
-                                        <i class="bi bi-pencil"></i> Update
-                                    </a>
-
-                                    <!-- Delete Attendance Button -->
-
-                                    <a href="#deleteModal" data-bs-toggle="modal" class="btn btn-danger"
-                                        onclick="setId(<?= $attendance['id']; ?>)">
-                                        <i class="bi bi-trash"></i> Delete
-                                    </a>
-
-
-                                </td>
-                            </tr>
-                            <?php } ?>
-                        </tbody>
-                    </table>
+                                    ?>
+                                    <tr>
+                                        <td><?= $attendance['id']; ?></td>
+                                        <td><?= read_column('employees', 'name', $attendance['employee_id']); ?></td>
+                                        <td><?= $attendance['attendance_date']; ?></td>
+                                        <td>
+                                            <div class="form-check form-switch d-inline-block">
+                                                <input class="form-check-input status-checkbox" type="checkbox"
+                                                       data-id="<?= $attendance['id']; ?>"
+                                                       <?= $attendance['status'] === 'Present' ? 'checked' : ''; ?>>
+                                            </div>
+                                            <span id="status-label-<?= $attendance['id']; ?>">
+                                                <?= $attendance['status'] === 'Present' ? '<i class="bi bi-check-circle" style="color: green;"></i>' : '<i class="bi bi-x-circle" style="color: red;"></i>'; ?>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 </main>
 
-<!-- Attendance Modal -->
-<div class="modal fade" id="attendanceModal" tabindex="-1" aria-labelledby="attendance_modal_label" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form method="post" id="attendanceForm">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="attendance_modal_label">Add New Attendance</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" name="action" id="action" value="insert">
-                    <input type="hidden" name="attendance_id" id="attendance_id" value="0">
-                    <div class="form-group mb-3">
-                        <input type="text" class="form-control" placeholder="Employee ID" name="employee_id"
-                            id="employee_id" required>
-                        <span class="text-danger" id="employeeError"></span>
-                    </div>
-                    <div class="form-group mb-3">
-                        <input type="date" class="form-control" placeholder="Attendance Date" name="attendance_date"
-                            id="attendance_date" required>
-                        <span class="text-danger" id="dateError"></span>
-                    </div>
-                    <div class="form-group mb-3">
-                        <select class="form-control" name="status" id="status" required>
-                            <option value="">Select Status</option>
-                            <option value="Present">Present</option>
-                            <option value="Absent">Absent</option>
-                        </select>
-                        <span class="text-danger" id="statusError"></span>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" name="btnSave">Save changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+<!-- jQuery for AJAX -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- Delete Modal -->
-<div class="modal fade" tabindex="-1" id="deleteModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header text-light" style="background-color: #603F26;">
-                <h5 class="modal-title">Delete Attendance</h5>
-                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form method="post" id="deleteForm">
-                <div class="modal-body">
-                    <input type="text" name="attendance_id" id="attendance_id">
-                    <p class="lead">Are you sure you want to delete this attendance record?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                    <button type="submit" class="btn btn-danger" name="btnDelete">Yes, Delete</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+<!-- Bootstrap JS for toggle switch -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-function reset() {
-    document.getElementById('attendanceModal').querySelector('.modal-title').textContent =
-        'Add New Attendance';
-    document.getElementById('action').value = 'insert';
-    document.getElementById('attendance_id').value = '0'; // Correct ID reference
-    document.getElementById('employee_id').value = '';
-    document.getElementById('attendance_date').value = '';
-    document.getElementById('status').value = '';
-}
+$(document).ready(function () {
+    $('.status-checkbox').change(function () {
+        let attendance_id = $(this).data('id');
+        let status = $(this).is(':checked');
 
-function setId(id) {
-    document.getElementById('attendance_id').value = id;
-}
-
-function fillForm(attendance_id, employee_id, attendance_date, status) {
-    document.getElementById('attendanceModal').querySelector('.modal-title').textContent = 'Update Attendance';
-    document.getElementById('attendance_id').value = attendance_id;
-    document.getElementById('employee_id').value = employee_id;
-    document.getElementById('attendance_date').value = attendance_date;
-    document.getElementById('status').value = status;
-
-    // Show the modal
-    const attendanceModal = new bootstrap.Modal(document.getElementById('attendanceModal'), {});
-    attendanceModal.show();
-}
+        $.ajax({
+            url: '', // Current PHP page
+            type: 'POST',
+            data: {
+                action: 'updateStatus',
+                attendance_id: attendance_id,
+                status: status
+            },
+            success: function (response) {
+                let res = JSON.parse(response);
+                if (res.success) {
+                    let statusLabel = $('#status-label-' + attendance_id);
+                    if (status) {
+                        statusLabel.html(
+                            '<i class="bi bi-check-circle" style="color: green;"></i>'); // Present icon
+                    } else {
+                        statusLabel.html(
+                            '<i class="bi bi-x-circle" style="color: red;"></i>'); // Absent icon
+                    }
+                } else {
+                    alert(res.message);
+                }
+            },
+            error: function () {
+                alert('Failed to update status.');
+            }
+        });
+    });
+});
 </script>
 
+<!-- Bootstrap Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 <!-- Bootstrap CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<!-- Bootstrap JS (Popper.js and Bootstrap) -->
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+<style>
+    /* Table Styling */
+    .table {
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .table thead {
+        background-color: #343a40;
+    }
+
+    .table th,
+    .table td {
+        vertical-align: middle;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    /* Card shadow */
+    .card {
+        border-radius: 10px;
+    }
+
+    .card-header {
+        font-weight: bold;
+    }
+
+    /* Custom status styling */
+    .form-switch .form-check-input {
+        width: 2.5em;
+        height: 1.5em;
+    }
+
+    .form-switch .form-check-input:checked {
+        background-color: #28a745;
+    }
+</style>

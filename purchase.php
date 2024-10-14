@@ -40,24 +40,22 @@ if (isset($_POST['btnDelete'])) {
 ?>
 <main id="main" class="main">
     <section class="section">
-        <div class="container mt-4">
-
-        </div>
+        <div class="container mt-4"></div>
         <div class="pagetitle text-center mt-5 p-2">
-            <h1>our suppliers</h1>
+            <h1>Our Suppliers</h1>
         </div>
+        
         <div class="alerts">
             <?php $message ? showMessage($message) : ""; ?>
         </div>
 
         <div class="row">
             <div class="card-header py-3 ">
-                <button type="button" class="btn" style="background-color: #603F26; color:white; margin-left:20px;"
-                    data-bs-toggle="modal" data-bs-target="#purchaseModal" onclick="reset()">
-                    Add new purchase
+                <button type="button" class="btn" style="background-color: #603F26; color:white; margin-left:20px;" data-bs-toggle="modal" data-bs-target="#purchaseModal" onclick="resetForm()">
+                    Add New Purchase
                 </button>
-
             </div>
+           
             <div class="col-lg-12 p-4">
                 <div class="card">
                     <table class="table datatable">
@@ -67,39 +65,32 @@ if (isset($_POST['btnDelete'])) {
                                 <th>Supplier ID</th>
                                 <th>Product ID</th>
                                 <th>Quantity</th>
-                                <!-- <th>Purchase Date</th> -->
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php
-                                    foreach (read('purchase') as $purchase) {
-                                ?>
+                            <?php foreach (read('purchase') as $purchase) { ?>
                             <tr>
-                                <td> <?= $purchase['id']; ?></td>
+                                <td><?= $purchase['id']; ?></td>
                                 <td><?= read_column('suppliers', 'supplier_name', $purchase['supplier_id']); ?></td>
                                 <td><?= read_column('products', 'product_name', $purchase['product_id']); ?></td>
                                 <td><?= $purchase['quantity']; ?></td>
-                               
                                 <td>
-                                    <!-- Edit Purchase Button -->
+                                    <!-- Edit Button -->
                                     <a href="#purchaseModal" data-bs-toggle="modal" class="btn btn-primary"
                                         onclick="fillForm(<?= $purchase['id']; ?>, <?= $purchase['supplier_id']; ?>, <?= $purchase['product_id']; ?>, <?= $purchase['quantity']; ?>, '<?= $purchase['purchase_date']; ?>')">
-                                        <i class="bi bi-pencil"></i> update
+                                        <i class="bi bi-pencil"></i> Update
                                     </a>
 
-                                    <!-- Delete Purchase Button -->
-                                    <a href="#deleteModal" data-bs-toggle="modal" class="btn btn-danger"
-                                        onclick="setId(<?= $purchase['id']; ?>)">
-                                        <i class="bi bi-trash"></i> delete
+                                    <!-- Delete Button -->
+                                    <a href="#deleteModal" data-bs-toggle="modal" class="btn btn-danger" onclick="setId(<?= $purchase['id']; ?>)">
+                                        <i class="bi bi-trash"></i> Delete
                                     </a>
                                 </td>
                             </tr>
                             <?php } ?>
                         </tbody>
-
                     </table>
-
                 </div>
             </div>
         </div>
@@ -118,30 +109,28 @@ if (isset($_POST['btnDelete'])) {
                 <div class="modal-body">
                     <input type="hidden" name="action" id="action" value="insert">
                     <input type="hidden" name="purchaseid" id="purchaseid" value="0">
+
                     <div class="form-group mb-3">
-                        <input type="text" class="form-control" placeholder="Supplier ID" name="supplier_id"
-                            id="supplier_id">
+                        <input type="text" class="form-control" placeholder="Supplier ID" name="supplier_id" id="supplier_id" required>
                         <span class="text-danger" id="supplierError"></span>
                     </div>
                     <div class="form-group mb-3">
-                        <input type="text" class="form-control" placeholder="Product ID" name="product_id"
-                            id="product_id">
+                        <input type="text" class="form-control" placeholder="Product ID" name="product_id" id="product_id" required>
                         <span class="text-danger" id="productError"></span>
                     </div>
                     <div class="form-group mb-3">
-                        <input type="number" class="form-control" placeholder="Quantity" name="quantity" id="quantity">
+                        <input type="number" class="form-control" placeholder="Quantity" name="quantity" id="quantity" required>
                         <span class="text-danger" id="quantityError"></span>
                     </div>
+                    <!-- Uncomment this field if you need to add purchase date -->
                     <!-- <div class="form-group mb-3">
-                        <input type="date" class="form-control" placeholder="Purchase Date" name="purchase_date"
-                            id="purchase_date">
+                        <input type="date" class="form-control" placeholder="Purchase Date" name="purchase_date" id="purchase_date">
                         <span class="text-danger" id="dateError"></span>
                     </div> -->
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" name="btnSave">Save
-                        changes</button>
+                    <button type="submit" class="btn btn-primary" name="btnSave">Save changes</button>
                 </div>
             </form>
         </div>
@@ -158,7 +147,7 @@ if (isset($_POST['btnDelete'])) {
             </div>
             <form method="post" id="deleteForm">
                 <div class="modal-body">
-                    <input type="text" name="purchase_id" id="purchase_id">
+                    <input type="hidden" name="purchase_id" id="purchase_id">
                     <p class="lead">Are you sure you want to delete this purchase?</p>
                 </div>
                 <div class="modal-footer">
@@ -169,10 +158,11 @@ if (isset($_POST['btnDelete'])) {
         </div>
     </div>
 </div>
+
 <script>
-function reset() {
-    document.getElementById('purchaseModal').querySelector('.modal-title').textContent =
-        'Add New Purchase';
+
+function resetForm() {
+    document.getElementById('purchase_modal_label').textContent = 'Add New Purchase';
     document.getElementById('action').value = 'insert';
     document.getElementById('purchaseid').value = '0';
     document.getElementById('supplier_id').value = '';
@@ -181,13 +171,12 @@ function reset() {
     document.getElementById('purchase_date').value = '';
 }
 
-function setId(id) { 
-    document.getElementById('purchase_id').value = id; 
+function setId(id) {
+    document.getElementById('purchase_id').value = id;
 }
 
 function fillForm(id, supplier_id, product_id, quantity, purchase_date) {
-    document.getElementById('purchaseModal').querySelector('.modal-title').textContent =
-        'Update Purchase';
+    document.getElementById('purchase_modal_label').textContent = 'Update Purchase';
     document.getElementById('action').value = 'update';
     document.getElementById('purchaseid').value = id;
     document.getElementById('supplier_id').value = supplier_id;
@@ -195,15 +184,12 @@ function fillForm(id, supplier_id, product_id, quantity, purchase_date) {
     document.getElementById('quantity').value = quantity;
     document.getElementById('purchase_date').value = purchase_date;
 
-    const purchaseModal = new bootstrap.Modal(document.getElementById('purchaseModal'), {});
+    const purchaseModal = new bootstrap.Modal(document.getElementById('purchaseModal'));
     purchaseModal.show();
 }
 </script>
 
-
-<!-- Bootstrap CSS -->
+<!-- Bootstrap CSS & JS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<!-- Bootstrap JS (Popper.js and Bootstrap) -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>

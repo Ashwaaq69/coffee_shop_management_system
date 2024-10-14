@@ -148,92 +148,13 @@ if(isset($_POST['btnDelete'])){
 
             <div class="container mt-4">
                 <div class="text-center">
-                    <h2>Hi, Welcome Back!</h2>
+                    <!-- <h2>Hi, Welcome Back!</h2> -->
                     <!-- <p class="lead">Your restaurant admin template</p> -->
                 </div>
             </div>
 
             <!-- Employee Cards Grid -->
-            <div class="container p-4" style="background-color: #603F26; margin: botom 20px;">
-                <div class="row row-cols-1 row-cols-md-3 g-4">
-                    <!-- Employee Card 1 -->
-                    <div class="col">
-                        <div class="card h-100 text-center shadow-sm">
-                            <img src="https://imgs.search.brave.com/QirPMZ0zGEfEu7SAGrl8efhcCub0CC9jTV7xdydFQdI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/aXN0b2NrcGhvdG8u/Y29tL3Jlc291cmNl/cy9pbWFnZXMvUGhv/dG9GVExQL1NjaWVu/Y2VUZWNobm9sb2d5/LTgyNTE4MDg0Ni5q/cGc"
-                                class="card-img-top rounded-circle mx-auto mt-3" alt="Airi Satou" style="width: 100px;">
-                            <div class="card-body">
-                                <h5 class="card-title">Airi Satou</h5>
-                                <p class="card-text">Manager</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Employee Card 2 -->
-                    <div class="col">
-                        <div class="card h-100 text-center shadow-sm">
-                            <img src="https://imgs.search.brave.com/QirPMZ0zGEfEu7SAGrl8efhcCub0CC9jTV7xdydFQdI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/aXN0b2NrcGhvdG8u/Y29tL3Jlc291cmNl/cy9pbWFnZXMvUGhv/dG9GVExQL1NjaWVu/Y2VUZWNobm9sb2d5/LTgyNTE4MDg0Ni5q/cGc"
-                                class="card-img-top rounded-circle mx-auto mt-3" alt="Angelica Ramos"
-                                style="width: 100px;">
-                            <div class="card-body">
-                                <h5 class="card-title">Angelica Ramos</h5>
-                                <p class="card-text">Waiter</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Employee Card 3 -->
-                    <div class="col">
-                        <div class="card h-100 text-center shadow-sm">
-                            <img src="https://imgs.search.brave.com/QirPMZ0zGEfEu7SAGrl8efhcCub0CC9jTV7xdydFQdI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/aXN0b2NrcGhvdG8u/Y29tL3Jlc291cmNl/cy9pbWFnZXMvUGhv/dG9GVExQL1NjaWVu/Y2VUZWNobm9sb2d5/LTgyNTE4MDg0Ni5q/cGc"
-                                class="card-img-top rounded-circle mx-auto mt-3" alt="Bradley Greer"
-                                style="width: 100px;">
-                            <div class="card-body">
-                                <h5 class="card-title">Bradley Greer</h5>
-                                <p class="card-text">Waiter</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Employee Card 4 -->
-                    <div class="col">
-                        <div class="card h-100 text-center shadow-sm">
-                            <img src="https://imgs.search.brave.com/QirPMZ0zGEfEu7SAGrl8efhcCub0CC9jTV7xdydFQdI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/aXN0b2NrcGhvdG8u/Y29tL3Jlc291cmNl/cy9pbWFnZXMvUGhv/dG9GVExQL1NjaWVu/Y2VUZWNobm9sb2d5/LTgyNTE4MDg0Ni5q/cGc"
-                                class="card-img-top rounded-circle mx-auto mt-3" alt="Brenden Wagner"
-                                style="width: 100px;">
-                            <div class="card-body">
-                                <h5 class="card-title">Brenden Wagner</h5>
-                                <p class="card-text">Waitress</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Employee Card 5 -->
-                    <div class="col">
-                        <div class="card h-100 text-center shadow-sm">
-                            <img src="https://imgs.search.brave.com/QirPMZ0zGEfEu7SAGrl8efhcCub0CC9jTV7xdydFQdI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/aXN0b2NrcGhvdG8u/Y29tL3Jlc291cmNl/cy9pbWFnZXMvUGhv/dG9GVExQL1NjaWVu/Y2VUZWNobm9sb2d5/LTgyNTE4MDg0Ni5q/cGc"
-                                class="card-img-top rounded-circle mx-auto mt-3" alt="Bob Springer"
-                                style="width: 100px;">
-                            <div class="card-body">
-                                <h5 class="card-title">Bob Springer</h5>
-                                <p class="card-text">Delivery person</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Employee Card 6 -->
-                    <div class="col">
-                        <div class="card h-100 text-center shadow-sm">
-                            <img src="https://imgs.search.brave.com/QirPMZ0zGEfEu7SAGrl8efhcCub0CC9jTV7xdydFQdI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/aXN0b2NrcGhvdG8u/Y29tL3Jlc291cmNl/cy9pbWFnZXMvUGhv/dG9GVExQL1NjaWVu/Y2VUZWNobm9sb2d5/LTgyNTE4MDg0Ni5q/cGc"
-                                class="card-img-top rounded-circle mx-auto mt-3" alt="Jonas Alexander"
-                                style="width: 100px;">
-                            <div class="card-body">
-                                <h5 class="card-title">Jonas Alexander</h5>
-                                <p class="card-text">Waitress</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+           
 
             <div class="pagetitle text-center mt-5 p-2">
                 <h1>Employees list</h1>

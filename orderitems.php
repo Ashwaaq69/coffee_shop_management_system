@@ -58,19 +58,29 @@ if (!empty($message)) {
 
         <div class="row">
             <div class="card-header py-3">
-                <button type="button" class="btn" style="background-color: #603F26; color:white; margin-left:20px;"
-                    data-bs-toggle="modal" data-bs-target="#orderItemModal" onclick="reset()">
-                    Add New Order Item
-                </button>
+                <div class="d-flex justify-content-between align-items-center" style="margin-left: 15px;">
+                    <!-- Add New Order Item Button -->
+                    <button type="button" class="btn" style="background-color: #603F26; color:white;"
+                        data-bs-toggle="modal" data-bs-target="#orderItemModal" onclick="reset()">
+                        Add New Order Item
+                    </button>
+
+                    <!-- Search bar -->
+                    <div class="col-lg-3" style="margin-right: 30px;">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search Order Items"
+                            onkeyup="filterTable()">
+                    </div>
+                </div>
             </div>
+
             <div class="col-lg-12 p-4">
                 <div class="card">
-                    <table class="table datatable">
+                    <table class="table datatable" id="orderItemsTable">
                         <thead>
                             <tr>
                                 <th><b>ID</b></th>
                                 <th>Order_id</th>
-                                <th>Produc_id</th>
+                                <th>Product_id</th>
                                 <th>Quantity</th>
                                 <th>Price</th>
                                 <th>Total</th>
@@ -101,6 +111,11 @@ if (!empty($message)) {
                             <?php } ?>
                         </tbody>
                     </table>
+
+                    <!-- Pagination -->
+                    <div class="d-flex justify-content-center">
+                        <ul id="pagination" class="pagination"></ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -172,6 +187,75 @@ if (!empty($message)) {
 </div>
 
 <script>
+const rowsPerPage = 5; // Number of rows per page
+let currentPage = 1;
+const table = document.getElementById("orderItemsTable");
+const pagination = document.getElementById("pagination");
+const rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+
+function displayRows(page) {
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    for (let i = 0; i < rows.length; i++) {
+        rows[i].style.display = (i >= start && i < end) ? "" : "none";
+    }
+}
+
+function setupPagination() {
+    pagination.innerHTML = ""; // Clear pagination
+    const pageCount = Math.ceil(rows.length / rowsPerPage);
+    for (let i = 1; i <= pageCount; i++) {
+        const li = document.createElement("li");
+        li.className = "page-item";
+        li.innerHTML = `<a class="page-link" href="javascript:void(0);" onclick="changePage(${i})">${i}</a>`;
+        pagination.appendChild(li);
+    }
+}
+
+function changePage(page) {
+    currentPage = page;
+    displayRows(currentPage);
+    highlightCurrentPage();
+}
+
+function highlightCurrentPage() {
+    const pages = pagination.getElementsByTagName("a");
+    for (let i = 0; i < pages.length; i++) {
+        pages[i].classList.remove("active");
+    }
+    pages[currentPage - 1].classList.add("active");
+}
+
+// Initialize pagination on page load
+window.onload = function() {
+    setupPagination();
+    displayRows(currentPage);
+    highlightCurrentPage();
+};
+
+function filterTable() {
+    var input, filter, table, tr, td, i, j, txtValue;
+    input = document.getElementById('searchInput');
+    filter = input.value.toLowerCase();
+    table = document.getElementById('orderItemsTable');
+    tr = table.getElementsByTagName('tr');
+
+    for (i = 1; i < tr.length; i++) { // Start from 1 to skip the header row
+        tr[i].style.display = 'none'; // Initially hide all rows
+
+        // Loop through each cell (td) in the current row
+        td = tr[i].getElementsByTagName('td');
+        for (j = 0; j < td.length; j++) {
+            if (td[j]) {
+                txtValue = td[j].textContent || td[j].innerText;
+                if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                    tr[i].style.display = ''; // Show the row if a match is found
+                    break; // Stop searching through the rest of the cells
+                }
+            }
+        }
+    }
+}
 // Function to fill the modal with existing data for update
 function fillForm(id, order_id, product_id, quantity, price, total) {
     document.getElementById('action').value = 'update';
@@ -205,4 +289,8 @@ function setId(id) {
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <!-- Include Bootstrap JS before the closing body tag -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Include Bootstrap CSS and JS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

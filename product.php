@@ -23,6 +23,12 @@ include 'includes/init.php'; // Ensure you have the session started in 'init.php
             ['id' => 7, 'name' => 'turkish coffee', 'price' => 4.30],
             ['id' => 8, 'name' => 'leto', 'price' => 5],
             ['id' => 9, 'name' => 'Esperso', 'price' => 6],
+            ['id' => 10, 'name' => 'Americano', 'price' => 7.7],
+            ['id' => 17, 'name' => 'esperto', 'price' => 4],
+            ['id' => 18, 'name' => 'Cappuccino', 'price' => 5],
+            ['id' => 19, 'name' => 'Dopio', 'price' => 3.5],
+            ['id' => 20, 'name' => 'mocha', 'price' => 4.25],
+           
         ];
 
         foreach ($products as $product): ?>

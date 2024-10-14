@@ -26,7 +26,7 @@
                 <li>
                     <a href="attendence.php">
                     <i class="bi bi-calendar-check"></i>
-                        <span>Emp_attendence</span>
+                        <span>attendence</span>
                     </a>
                 </li>
                 <li>
@@ -97,12 +97,13 @@
             <!-- End Profile Page Nav -->
 
 
-        <li class="nav-item">
+        <!-- <li class="nav-item">
             <a class="nav-link collapsed" href="pages-contact.php">
                 <i class="bi bi-envelope"></i>
                 <span>Contact</span>
             </a>
-        </li><!-- End Contact Page Nav -->
+        </li>
+        End Contact Page Nav -->
 
 
 
